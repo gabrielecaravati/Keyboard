@@ -908,60 +908,69 @@ http://www.opensource.org/licenses/mit-license.php
 	base.bindKeys = function () {
 		var kbcss = $keyboard.css;
 		base.$allKeys = base.$keyboard.find('button.' + kbcss.keyButton)
-			.unbind(base.namespace + ' ' + base.namespace + 'kb')
-			// Change hover class and tooltip - moved this touchstart before option.keyBinding touchstart
-			// to prevent mousewheel lag/duplication - Fixes #379 & #411
-			.bind('mouseenter mouseleave touchstart '.split(' ').join(base.namespace + ' '), function (e) {
-				if ((o.alwaysOpen || o.userClosed) && e.type !== 'mouseleave' && !base.isCurrent()) {
-					base.reveal();
-					base.$preview.focus();
-					$keyboard.caret(base.$preview, base.last);
-				}
-				if (!base.isCurrent()) {
-					return;
-				}
-				var $keys, txt,
+			.unbind(base.namespace + ' ' + base.namespace + 'kb');
+
+        // Change hover class and tooltip - moved this touchstart before option.keyBinding touchstart
+		// to prevent mousewheel lag/duplication - Fixes #379 & #411
+		var supportedEvents = 'ontouchstart' in window || window.navigator.msPointerEnabled ? 'touchstart touchend' : 'mousedown mouseup';
+
+	    //base().bind('mouseenter mouseleave touchstart '.split(' ').join(base.namespace + ' '), function (e) {
+	    base.$keyboard.find('button.' + kbcss.keyButton)
+            .bind(supportedEvents.split(' ').join(base.namespace + ' '), function (e) {
+	        //if ((o.alwaysOpen || o.userClosed) && e.type !== 'mouseleave' && !base.isCurrent()) {
+	        if ((o.alwaysOpen || o.userClosed) && (e.type !== 'mouseup' || e.type !== 'touchend') && !base.isCurrent()) {
+                    base.reveal();
+                    base.$preview.focus();
+                    $keyboard.caret(base.$preview, base.last);
+                }
+                if (!base.isCurrent()) {
+                    return;
+                }
+                var $keys, txt,
 					last = base.last,
 					$this = $(this),
 					type = e.type;
 
-				if (o.useWheel && base.wheel) {
-					$keys = base.getLayers($this);
-					txt = ($keys.length ? $keys.map(function () {
-							return $(this).attr('data-value') || '';
-						})
+                if (o.useWheel && base.wheel) {
+                    $keys = base.getLayers($this);
+                    txt = ($keys.length ? $keys.map(function () {
+                        return $(this).attr('data-value') || '';
+                    })
 						.get() : '') || [$this.text()];
-					last.wheel_$Keys = $keys;
-					last.wheelLayers = txt;
-					last.wheelIndex = $.inArray($this.attr('data-value'), txt);
-				}
-
-				if ((type === 'mouseenter' || type === 'touchstart') && base.el.type !== 'password' &&
+                    last.wheel_$Keys = $keys;
+                    last.wheelLayers = txt;
+                    last.wheelIndex = $.inArray($this.attr('data-value'), txt);
+                }
+	            //if ((type === 'mouseenter' || type === 'touchstart') && base.el.type !== 'password' &&
+                if ((type === 'mousedown' || type === 'touchstart') && base.el.type !== 'password' &&
 					!$this.hasClass(o.css.buttonDisabled)) {
-					$this.addClass(o.css.buttonHover);
-					if (o.useWheel && base.wheel) {
-						$this.attr('title', function (i, t) {
-							// show mouse wheel message
-							return (base.wheel && t === '' && base.sets && txt.length > 1 && type !== 'touchstart') ?
+                    $this.addClass(o.css.buttonHover);
+                    if (o.useWheel && base.wheel) {
+                        $this.attr('title', function (i, t) {
+                            // show mouse wheel message
+                            return (base.wheel && t === '' && base.sets && txt.length > 1 && type !== 'touchstart') ?
 								o.wheelMessage : t;
-						});
-					}
-				}
-				if (type === 'mouseleave') {
-					// needed or IE flickers really bad
-					$this.removeClass((base.el.type === 'password') ? '' : o.css.buttonHover);
-					if (o.useWheel && base.wheel) {
-						last.wheelIndex = 0;
-						last.wheelLayers = [];
-						last.wheel_$Keys = null;
-						$this
+                        });
+                    }
+                }
+	            //if (type === 'mouseleave') {
+                if (type === 'mouseup') {
+                    // needed or IE flickers really bad
+                    $this.removeClass((base.el.type === 'password') ? '' : o.css.buttonHover);
+                    if (o.useWheel && base.wheel) {
+                        last.wheelIndex = 0;
+                        last.wheelLayers = [];
+                        last.wheel_$Keys = null;
+                        $this
 							.attr('title', function (i, t) {
-								return (t === o.wheelMessage) ? '' : t;
+							    return (t === o.wheelMessage) ? '' : t;
 							})
 							.html($this.attr('data-html')); // restore original button text
-					}
-				}
-			})
+                    }
+                }
+            })
+
+	        
 			// keyBinding = 'mousedown touchstart' by default
 			.bind(o.keyBinding.split(' ').join(base.namespace + ' ') + base.namespace + ' ' +
 				$keyboard.events.kbRepeater, function (e) {
