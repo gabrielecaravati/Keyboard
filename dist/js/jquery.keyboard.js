@@ -2218,8 +2218,9 @@ http://www.opensource.org/licenses/mit-license.php
 	// Action key function list
 	$keyboard.keyaction = {
 		accept: function (base) {
-			base.close(true); // same as base.accept();
-			return false; // return false prevents further processing
+			return $keyboard.keyaction.tab(base);
+			//base.close(true); // same as base.accept();
+			//return false; // return false prevents further processing
 		},
 		alt: function (base) {
 			base.altActive = !base.altActive;
