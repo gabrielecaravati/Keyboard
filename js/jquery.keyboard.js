@@ -396,7 +396,7 @@ http://www.opensource.org/licenses/mit-license.php
             if ($.ui && $.ui.position && base.position) {
                 // get single target position || target stored in element data (multiple targets) || default @ element
                 base.position.of = base.position.of || base.$el.data('keyboardPosition') || base.$el;
-                base.position.collision = base.position.collision || 'flipfit flipfit';
+                base.position.collision = base.position.collision || 'flip flip';
                 o.position.at = o.usePreview ? o.position.orig_at : o.position.at2;
                 base.$keyboard.position(base.position);
             }
