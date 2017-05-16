@@ -2381,7 +2381,7 @@ http://www.opensource.org/licenses/mit-license.php
         tab: function (base) {
             var tag = base.el.nodeName,
                 o = base.options;
-            if (tag === 'INPUT') {
+            if (tag === 'INPUT' || tag === 'TEXTAREA') {
                 if (o.tabNavigation) {
                     return base.switchInput(!base.shiftActive, true);
                 } else {
